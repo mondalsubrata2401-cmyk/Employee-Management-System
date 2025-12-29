@@ -13,7 +13,7 @@ export const Avatar = ({ name, size = "md", src }) => {
   };
   
   return (
-    <div className={`${sizes[size]} rounded-full bg-slate-100 flex items-center justify-center font-semibold text-slate-600 border border-slate-200 overflow-hidden`}>
+    <div className={`${sizes[size]} rounded-full bg-[var(--secondary)] flex items-center justify-center font-semibold text-[var(--text-secondary)] border border-[var(--border)] overflow-hidden`}>
       {src ? (
         <img src={src} alt={name} className="h-full w-full object-cover" />
       ) : (

@@ -4,15 +4,15 @@
  */
 export const Badge = ({ children, type = "neutral" }) => {
   const styles = {
-    success: "bg-emerald-50 text-emerald-700 border-emerald-100",
-    warning: "bg-amber-50 text-amber-700 border-amber-100",
-    danger: "bg-rose-50 text-rose-700 border-rose-100",
-    neutral: "bg-slate-100 text-slate-600 border-slate-200",
-    indigo: "bg-indigo-50 text-indigo-700 border-indigo-100",
+    success: "bg-[var(--success-bg)] text-[var(--success)] border-[var(--success-bg)]",
+    warning: "bg-[var(--warning-bg)] text-[var(--warning)] border-[var(--warning-bg)]",
+    danger: "bg-[var(--error-bg)] text-[var(--error)] border-[var(--error-bg)]",
+    neutral: "bg-[var(--secondary)] text-[var(--text-secondary)] border-[var(--border)]",
+    indigo: "bg-[var(--accent)] text-[var(--accent-foreground)] border-[var(--accent)]",
   };
   
   return (
-    <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${styles[type] || styles.neutral}`}>
+    <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full border transition-colors ${styles[type] || styles.neutral}`}>
       {children}
     </span>
   );

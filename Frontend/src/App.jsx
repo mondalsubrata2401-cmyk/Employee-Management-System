@@ -1,28 +1,35 @@
 import { useState } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
+import { UserProvider, useUser } from './context/UserContext';
+import { TasksProvider } from './context/TasksContext';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
 import { DashboardView } from './pages/Dashboard';
+import { AdminDashboardView } from './pages/AdminDashboard';
 import { AttendanceView } from './pages/Attendance';
 import { LeaveView } from './pages/Leave';
 import { PayslipsView } from './pages/Payslips';
 import { PerformanceView } from './pages/Performance';
 import { ProfileView } from './pages/Profile';
+import { TasksView } from './pages/Tasks';
 import { PlaceholderView } from './pages/Placeholder';
 
 /**
- * Main App Component - Employee Management System
- * Professional, Minimal, Enterprise-Grade Dashboard
+ * Main App Content Component
  */
-function App() {
+function AppContent() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [notifications] = useState(3);
+  const { isAdmin } = useUser();
 
   // Render active view based on selected tab
   const renderView = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <DashboardView setActiveTab={setActiveTab} />;
+        return isAdmin() ? 
+          <AdminDashboardView setActiveTab={setActiveTab} /> : 
+          <DashboardView setActiveTab={setActiveTab} />;
       case 'attendance':
         return <AttendanceView />;
       case 'leave':
@@ -34,16 +41,18 @@ function App() {
       case 'profile':
         return <ProfileView />;
       case 'tasks':
-        return <PlaceholderView moduleName="Tasks" />;
+        return <TasksView />;
       case 'team':
         return <PlaceholderView moduleName="Team Directory" />;
       default:
-        return <DashboardView setActiveTab={setActiveTab} />;
+        return isAdmin() ? 
+          <AdminDashboardView setActiveTab={setActiveTab} /> : 
+          <DashboardView setActiveTab={setActiveTab} />;
     }
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="flex h-screen bg-[var(--background)] font-sans text-[var(--foreground)] transition-colors">
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <div 
@@ -77,6 +86,22 @@ function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+/**
+ * Main App Component - Employee Management System
+ * Professional, Minimal, Enterprise-Grade Dashboard
+ */
+function App() {
+  return (
+    <ThemeProvider>
+      <UserProvider>
+        <TasksProvider>
+          <AppContent />
+        </TasksProvider>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 

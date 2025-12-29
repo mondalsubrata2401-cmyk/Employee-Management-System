@@ -7,7 +7,7 @@ import { PAYSLIPS } from '../data/mockData';
  */
 export const PayslipsView = () => (
   <div className="space-y-6">
-    <h2 className="text-2xl font-bold text-slate-800">Payslips & Documents</h2>
+    <h2 className="text-2xl font-bold text-[var(--text-primary)]">Payslips & Documents</h2>
     
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Latest Payslip Summary */}
@@ -41,21 +41,21 @@ export const PayslipsView = () => (
       </Card>
 
       <Card className="p-6">
-        <h3 className="font-semibold text-slate-700 mb-4">Tax Projection</h3>
+        <h3 className="font-semibold text-[var(--text-secondary)] mb-4">Tax Projection</h3>
         <div className="relative pt-4">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-slate-600">Paid so far</span>
-            <span className="font-bold text-slate-800">$12,400</span>
+            <span className="text-[var(--text-secondary)]">Paid so far</span>
+            <span className="font-bold text-[var(--text-primary)]">$12,400</span>
           </div>
-          <div className="h-2 w-full bg-slate-100 rounded-full mb-6">
-            <div className="h-full bg-indigo-600 rounded-full" style={{ width: '65%' }}></div>
+          <div className="h-2 w-full bg-[var(--secondary)] rounded-full mb-6">
+            <div className="h-full bg-[var(--primary)] rounded-full" style={{ width: '65%' }}></div>
           </div>
           <div className="space-y-2">
-            <div className="flex justify-between text-xs text-slate-500 border-b border-slate-100 pb-2">
+            <div className="flex justify-between text-xs text-[var(--muted-foreground)] border-b border-[var(--border)] pb-2">
               <span>Taxable Income</span>
               <span>$64,800</span>
             </div>
-            <div className="flex justify-between text-xs text-slate-500 pb-2">
+            <div className="flex justify-between text-xs text-[var(--muted-foreground)] pb-2">
               <span>Proj. Tax</span>
               <span>$6,200</span>
             </div>
@@ -65,28 +65,28 @@ export const PayslipsView = () => (
     </div>
 
     <Card>
-      <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-        <h3 className="font-semibold text-slate-800">Payslip History</h3>
+      <div className="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center">
+        <h3 className="font-semibold text-[var(--text-primary)]">Payslip History</h3>
         <div className="relative">
-          <input type="text" placeholder="Search by year..." className="pl-8 pr-3 py-1.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500" />
-          <Search size={14} className="absolute left-2.5 top-2.5 text-slate-400" />
+          <input type="text" placeholder="Search by year..." className="pl-8 pr-3 py-1.5 text-sm border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] rounded-md focus:outline-none focus:ring-1 focus:ring-[var(--ring)]" />
+          <Search size={14} className="absolute left-2.5 top-2.5 text-[var(--muted-foreground)]" />
         </div>
       </div>
-      <div className="divide-y divide-slate-100">
+      <div className="divide-y divide-[var(--border)]">
         {PAYSLIPS.map((slip, i) => (
-          <div key={i} className="px-6 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
+          <div key={i} className="px-6 py-4 flex items-center justify-between hover:bg-[var(--muted)] transition-colors">
             <div className="flex items-center space-x-4">
-              <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+              <div className="p-2 bg-[var(--accent)] text-[var(--accent-foreground)] rounded-lg">
                 <FileText size={20} />
               </div>
               <div>
-                <p className="font-medium text-slate-800">{slip.month}</p>
-                <p className="text-xs text-slate-500">ID: {slip.id} • Processed {slip.date}</p>
+                <p className="font-medium text-[var(--text-primary)]">{slip.month}</p>
+                <p className="text-xs text-[var(--muted-foreground)]">ID: {slip.id} • Processed {slip.date}</p>
               </div>
             </div>
             <div className="flex items-center space-x-6">
-              <span className="font-semibold text-slate-700">{slip.amount}</span>
-              <Button variant="ghost" className="text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 p-2 h-auto">
+              <span className="font-semibold text-[var(--text-secondary)]">{slip.amount}</span>
+              <Button variant="ghost" className="text-[var(--primary)] hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] p-2 h-auto">
                 <Download size={18} />
               </Button>
             </div>

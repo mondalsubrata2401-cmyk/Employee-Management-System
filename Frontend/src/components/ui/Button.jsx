@@ -15,10 +15,10 @@ export const Button = ({
   const baseStyle = "inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    primary: "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm",
-    secondary: "bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-indigo-500 shadow-sm",
-    ghost: "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
-    danger: "bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500",
+    primary: "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] focus:ring-[var(--ring)] shadow-sm",
+    secondary: "bg-[var(--card)] text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--muted)] focus:ring-[var(--ring)] shadow-sm",
+    ghost: "text-[var(--text-secondary)] hover:bg-[var(--muted)] hover:text-[var(--text-primary)]",
+    danger: "bg-[var(--error)] text-[var(--error-foreground)] hover:opacity-90 focus:ring-[var(--error)]",
     magic: "bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-sm",
   };
   

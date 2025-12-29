@@ -39,8 +39,8 @@ export const PerformanceView = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800">Performance & Growth</h2>
-          <p className="text-slate-500 text-sm">Track your career progress and objectives</p>
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Performance & Growth</h2>
+          <p className="text-[var(--muted-foreground)] text-sm">Track your career progress and objectives</p>
         </div>
         <Button variant="magic" onClick={handleGenerateOKRs} loading={isGenerating} icon={Sparkles}>
           Suggest OKRs with AI
@@ -55,8 +55,8 @@ export const PerformanceView = () => {
           </div>
           <div className="space-y-3">
             {generatedGoals.map((goal) => (
-              <div key={goal.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-indigo-100 shadow-sm">
-                <p className="text-sm text-slate-700 font-medium">{goal.title}</p>
+              <div key={goal.id} className="flex items-center justify-between p-3 bg-[var(--card)] rounded-lg border border-[var(--accent)] shadow-sm">
+                <p className="text-sm text-[var(--text-secondary)] font-medium">{goal.title}</p>
                 <Button variant="secondary" className="h-8 px-3 text-xs" onClick={() => acceptGoal(goal)}>Add to Goals</Button>
               </div>
             ))}
@@ -67,22 +67,22 @@ export const PerformanceView = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6">
-            <h3 className="font-semibold text-slate-800 mb-6">Current Objectives (OKRs)</h3>
+            <h3 className="font-semibold text-[var(--text-primary)] mb-6">Current Objectives (OKRs)</h3>
             <div className="space-y-6">
               {goals.map(goal => (
                 <div key={goal.id}>
                   <div className="flex justify-between items-center mb-2">
                     <div>
-                      <p className="font-medium text-slate-800">{goal.title}</p>
-                      <p className="text-xs text-slate-500">Due: Dec 31, 2023</p>
+                      <p className="font-medium text-[var(--text-primary)]">{goal.title}</p>
+                      <p className="text-xs text-[var(--muted-foreground)]">Due: Dec 31, 2023</p>
                     </div>
                     <Badge type={goal.status === 'On Track' ? 'success' : goal.status === 'At Risk' ? 'warning' : 'neutral'}>{goal.status}</Badge>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="flex-1 h-2 bg-[var(--secondary)] rounded-full overflow-hidden">
                       <div className={`h-full rounded-full ${goal.progress >= 75 ? 'bg-emerald-500' : goal.progress >= 40 ? 'bg-amber-500' : 'bg-slate-400'}`} style={{ width: `${goal.progress}%` }}></div>
                     </div>
-                    <span className="text-xs font-bold text-slate-600 w-8">{goal.progress}%</span>
+                    <span className="text-xs font-bold text-[var(--text-secondary)] w-8">{goal.progress}%</span>
                   </div>
                 </div>
               ))}
@@ -90,18 +90,18 @@ export const PerformanceView = () => {
           </Card>
 
           <Card className="p-6">
-            <h3 className="font-semibold text-slate-800 mb-4">Feedback & Reviews</h3>
-            <div className="p-4 bg-slate-50 rounded-lg border border-slate-100 mb-4">
+            <h3 className="font-semibold text-[var(--text-primary)] mb-4">Feedback & Reviews</h3>
+            <div className="p-4 bg-[var(--muted)] rounded-lg border border-[var(--border)] mb-4">
               <div className="flex items-center space-x-3 mb-2">
-                <div className={`h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-semibold text-slate-600 border border-slate-200 overflow-hidden text-xs`}>
+                <div className={`h-8 w-8 rounded-full bg-[var(--secondary)] flex items-center justify-center font-semibold text-[var(--text-secondary)] border border-[var(--border)] overflow-hidden text-xs`}>
                   {showAvatar ? <img src="" alt="Sarah Connor" className="h-full w-full object-cover" /> : "SC"}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-800">Sarah Connor</p>
-                  <p className="text-xs text-slate-500">Oct 15, 2023 • Mid-Quarter Check-in</p>
+                  <p className="text-sm font-bold text-[var(--text-primary)]">Sarah Connor</p>
+                  <p className="text-xs text-[var(--muted-foreground)]">Oct 15, 2023 • Mid-Quarter Check-in</p>
                 </div>
               </div>
-              <p className="text-sm text-slate-600 italic">&quot;Alex is doing a great job leading the design system migration. Need to focus more on mentoring junior team members in the coming weeks.&quot;</p>
+              <p className="text-sm text-[var(--text-secondary)] italic">&quot;Alex is doing a great job leading the design system migration. Need to focus more on mentoring junior team members in the coming weeks.&quot;</p>
             </div>
           </Card>
         </div>
@@ -117,10 +117,10 @@ export const PerformanceView = () => {
           </Card>
 
           <Card className="p-6">
-            <h3 className="font-semibold text-slate-800 mb-4">Skills Matrix</h3>
+            <h3 className="font-semibold text-[var(--text-primary)] mb-4">Skills Matrix</h3>
             <div className="flex flex-wrap gap-2">
               {['UI Design', 'User Research', 'Prototyping', 'React', 'Design Systems', 'Team Leadership'].map(skill => (
-                <span key={skill} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
+                <span key={skill} className="px-3 py-1 bg-[var(--secondary)] text-[var(--text-secondary)] rounded-full text-xs font-medium">
                   {skill}
                 </span>
               ))}
