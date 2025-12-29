@@ -1,11 +1,21 @@
-import { Menu, Search, Bell, Moon, Sun } from 'lucide-react';
+import { Menu, Search, Bell, Moon, Sun, RefreshCw } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useUser } from '../../context/UserContext';
 
 /**
  * Top Header/Navbar Component
  */
-export const Navbar = ({ activeTab, setIsMobileMenuOpen, notifications = 3 }) => {
+export const Navbar = ({ activeTab, setIsMobileMenuOpen, setActiveTab, notifications = 3 }) => {
   const { theme, toggleTheme } = useTheme();
+  const { currentUser, switchUser, isAdmin } = useUser();
+
+  const handleSwitchUser = () => {
+    const newUser = currentUser === 'employee' ? 'admin' : 'employee';
+    switchUser(newUser);
+    // Reset to dashboard when switching users
+    setActiveTab('dashboard');
+  };
+
   return (
     <header className="bg-[var(--navbar-bg)] border-b border-[var(--border)] h-16 flex items-center justify-between px-4 lg:px-8 transition-colors">
       <div className="flex items-center">
@@ -21,15 +31,27 @@ export const Navbar = ({ activeTab, setIsMobileMenuOpen, notifications = 3 }) =>
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* Search Bar (Hidden on mobile) */}
-        <div className="hidden md:flex relative">
-          <input 
-            type="text" 
-            placeholder="Search..." 
-            className="w-64 pl-10 pr-4 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:bg-[var(--card)] transition-all"
-          />
-          <Search size={18} className="absolute left-3 top-2.5 text-[var(--muted-foreground)]" />
-        </div>
+        {/* Search Bar (Hidden on mobile and for admin) */}
+        {!isAdmin() && (
+          <div className="hidden md:flex relative">
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              className="w-64 pl-10 pr-4 py-2 bg-[var(--muted)] border border-[var(--border)] rounded-lg text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)] focus:bg-[var(--card)] transition-all"
+            />
+            <Search size={18} className="absolute left-3 top-2.5 text-[var(--muted-foreground)]" />
+          </div>
+        )}
+
+        {/* User Mode Switcher */}
+        <button
+          onClick={handleSwitchUser}
+          className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-[var(--accent)] hover:bg-[var(--accent)]/80 text-[var(--accent-foreground)] rounded-lg text-xs font-medium transition-colors"
+          title={`Switch to ${currentUser === 'employee' ? 'Admin' : 'Employee'} Mode`}
+        >
+          <RefreshCw size={14} />
+          <span>Switch to {currentUser === 'employee' ? 'Admin' : 'Employee'}</span>
+        </button>
 
         {/* Dark Mode Toggle */}
         <button 

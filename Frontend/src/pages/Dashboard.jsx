@@ -8,19 +8,30 @@ import {
   MoreHorizontal
 } from 'lucide-react';
 import { Card, Badge, Button, Avatar } from '../components/ui';
-import { USER_PROFILE, STATS, ATTENDANCE_LOGS, TASKS, ANNOUNCEMENTS, TEAM_MEMBERS } from '../data/mockData';
+import { useUser } from '../context/UserContext';
+import { useTasks } from '../context/TasksContext';
+import { USER_PROFILE, STATS, ATTENDANCE_LOGS, ANNOUNCEMENTS, TEAM_MEMBERS } from '../data/mockData';
 
 /**
  * Dashboard View Component
  */
-export const DashboardView = ({ setActiveTab }) => (
+export const DashboardView = ({ setActiveTab }) => {
+  const { getUserProfile } = useUser();
+  const { getTasksForUser } = useTasks();
+  const userProfile = getUserProfile();
+  
+  // Get real tasks for current user
+  const userTasks = getTasksForUser(userProfile.id);
+  const pendingTasks = userTasks.filter(t => t.status !== 'Completed').length;
+
+  return (
   <div className="space-y-6">
     {/* Welcome Section */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card className="md:col-span-2 p-6 flex items-center justify-between bg-linear-to-r from-indigo-600 to-indigo-800 text-white border-none">
         <div>
-          <h1 className="text-2xl font-bold mb-2">Good Morning, {USER_PROFILE.name.split(' ')[0]}!</h1>
-          <p className="text-indigo-100">You have {STATS.pendingTasks} tasks pending for today. Make it a productive one.</p>
+          <h1 className="text-2xl font-bold mb-2">Good Morning, {userProfile.name.split(' ')[0]}!</h1>
+          <p className="text-indigo-100">You have {pendingTasks} tasks pending for today. Make it a productive one.</p>
           <div className="mt-6 flex space-x-3">
             <button onClick={() => setActiveTab('tasks')} className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-lg text-sm font-medium transition-colors">
               View Tasks
@@ -109,20 +120,27 @@ export const DashboardView = ({ setActiveTab }) => (
               <MoreHorizontal size={16} className="text-[var(--muted-foreground)] cursor-pointer" />
             </div>
             <ul className="space-y-3">
-              {TASKS.map(task => (
-                <li key={task.id} className="flex items-start justify-between p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/30 transition-all cursor-pointer group">
-                  <div className="flex items-start space-x-3">
-                    <div className={`mt-1 w-2 h-2 rounded-full ${task.priority === 'High' ? 'bg-rose-500' : task.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                    <div>
-                      <p className="text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-foreground)]">{task.title}</p>
-                      <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Due: {task.due}</p>
-                    </div>
-                  </div>
-                  <Badge type={task.status === 'Completed' ? 'success' : task.status === 'In Progress' ? 'indigo' : 'neutral'}>
-                    {task.status}
-                  </Badge>
+              {userTasks.length === 0 ? (
+                <li className="text-center py-8 text-[var(--muted-foreground)]">
+                  <CheckSquare size={32} className="mx-auto mb-2 opacity-30" />
+                  <p className="text-sm">No tasks assigned yet</p>
                 </li>
-              ))}
+              ) : (
+                userTasks.slice(0, 5).map(task => (
+                  <li key={task.id} className="flex items-start justify-between p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/30 transition-all cursor-pointer group">
+                    <div className="flex items-start space-x-3">
+                      <div className={`mt-1 w-2 h-2 rounded-full ${task.priority === 'High' ? 'bg-rose-500' : task.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                      <div>
+                        <p className="text-sm font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-foreground)]">{task.title}</p>
+                        <p className="text-xs text-[var(--muted-foreground)] mt-0.5">Due: {new Date(task.dueDate).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                    <Badge type={task.status === 'Completed' ? 'success' : task.status === 'In Progress' ? 'indigo' : 'neutral'}>
+                      {task.status}
+                    </Badge>
+                  </li>
+                ))
+              )}
             </ul>
           </Card>
 
@@ -193,12 +211,13 @@ export const DashboardView = ({ setActiveTab }) => (
         <Card className="p-4 bg-linear-to-br from-slate-800 to-slate-900 text-slate-300 border-none relative overflow-hidden">
           <div className="relative z-10">
             <h4 className="text-white font-medium mb-1">Upcoming Holiday</h4>
-            <p className="text-2xl font-bold text-white mb-1">Thanksgiving</p>
-            <p className="text-sm opacity-80">Thursday, Nov 24</p>
+            <p className="text-2xl font-bold text-white mb-1">New Year's day</p>
+            <p className="text-sm opacity-80">Thursday, Jan 1</p>
           </div>
           <Calendar className="absolute -right-4 -bottom-4 text-slate-700 opacity-20" size={100} />
         </Card>
       </div>
     </div>
   </div>
-);
+  );
+};

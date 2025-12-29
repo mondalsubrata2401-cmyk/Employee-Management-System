@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Briefcase,
   LogOut,
-  RefreshCw
+  ListTodo
 } from 'lucide-react';
 import { Avatar } from '../ui';
 import { useUser } from '../../context/UserContext';
@@ -19,15 +19,8 @@ import { useUser } from '../../context/UserContext';
  * Sidebar Navigation Component
  */
 export const Sidebar = ({ activeTab, setActiveTab, isMobileMenuOpen, setIsMobileMenuOpen }) => {
-  const { getUserProfile, switchUser, currentUser } = useUser();
+  const { getUserProfile, isAdmin } = useUser();
   const userProfile = getUserProfile();
-
-  const handleSwitchUser = () => {
-    const newUser = currentUser === 'employee' ? 'admin' : 'employee';
-    switchUser(newUser);
-    // Reset to dashboard when switching users
-    setActiveTab('dashboard');
-  };
 
   const NavItem = ({ id, label, icon: Icon }) => (
     <button
@@ -55,13 +48,16 @@ export const Sidebar = ({ activeTab, setActiveTab, isMobileMenuOpen, setIsMobile
           <div className="w-8 h-8 bg-[var(--primary)] rounded-lg flex items-center justify-center">
             <Briefcase className="text-white" size={20} />
           </div>
-          <span className="text-xl font-bold text-[var(--foreground)] tracking-tight">Acme HR</span>
+          <span className="text-xl font-bold text-[var(--foreground)] tracking-tight">Faradic</span>
         </div>
 
         {/* Navigation Links */}
         <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1 custom-scrollbar">
           <div className="px-4 pb-2 text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">Main</div>
           <NavItem id="dashboard" label="Dashboard" icon={LayoutDashboard} />
+          {isAdmin() && (
+            <NavItem id="task-management" label="Task Management" icon={ListTodo} />
+          )}
           <NavItem id="attendance" label="Attendance" icon={Clock} />
           <NavItem id="leave" label="Leave & Time Off" icon={Calendar} />
           <NavItem id="tasks" label="My Tasks" icon={CheckSquare} />
@@ -77,15 +73,6 @@ export const Sidebar = ({ activeTab, setActiveTab, isMobileMenuOpen, setIsMobile
 
         {/* User Profile Mini - Bottom */}
         <div className="p-4 border-t border-[var(--border)]">
-          {/* User Switch Button */}
-          <button
-            onClick={handleSwitchUser}
-            className="w-full mb-3 px-3 py-2 bg-[var(--accent)] hover:bg-[var(--accent)]/80 text-[var(--accent-foreground)] rounded-lg text-xs font-medium transition-colors flex items-center justify-center space-x-2"
-          >
-            <RefreshCw size={14} />
-            <span>Switch to {currentUser === 'employee' ? 'Admin' : 'Employee'}</span>
-          </button>
-
           <div className="flex items-center space-x-3 p-2 rounded-lg hover:bg-[var(--muted)] transition-colors cursor-pointer">
             <Avatar name={userProfile.name} size="sm" />
             <div className="flex-1 min-w-0">

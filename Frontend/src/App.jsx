@@ -6,6 +6,7 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
 import { DashboardView } from './pages/Dashboard';
 import { AdminDashboardView } from './pages/AdminDashboard';
+import { TaskManagementView } from './pages/TaskManagement';
 import { AttendanceView } from './pages/Attendance';
 import { LeaveView } from './pages/Leave';
 import { PayslipsView } from './pages/Payslips';
@@ -30,6 +31,8 @@ function AppContent() {
         return isAdmin() ? 
           <AdminDashboardView setActiveTab={setActiveTab} /> : 
           <DashboardView setActiveTab={setActiveTab} />;
+      case 'task-management':
+        return isAdmin() ? <TaskManagementView /> : <DashboardView setActiveTab={setActiveTab} />;
       case 'attendance':
         return <AttendanceView />;
       case 'leave':
@@ -53,27 +56,30 @@ function AppContent() {
 
   return (
     <div className="flex h-screen bg-[var(--background)] font-sans text-[var(--foreground)] transition-colors">
-      {/* Mobile Sidebar Overlay */}
-      {isMobileMenuOpen && (
+      {/* Mobile Sidebar Overlay - Only show for Employees */}
+      {!isAdmin() && isMobileMenuOpen && (
         <div 
           className="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
 
-      {/* Sidebar Navigation */}
-      <Sidebar 
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-      />
+      {/* Sidebar Navigation - Only show for Employees */}
+      {!isAdmin() && (
+        <Sidebar 
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+        />
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header */}
         <Navbar 
           activeTab={activeTab}
+          setActiveTab={setActiveTab}
           setIsMobileMenuOpen={setIsMobileMenuOpen}
           notifications={notifications}
         />
