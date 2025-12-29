@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, X, User, Briefcase } from 'lucide-react';
+import { Plus, X, User, Briefcase, ArrowRightLeft, Bell } from 'lucide-react';
 import { Card, Badge, Button, Modal } from '../components/ui';
 import { useTasks } from '../context/TasksContext';
 import { EMPLOYEES } from '../data/employeeData';
@@ -12,6 +12,7 @@ export const TaskManagementView = () => {
   const { tasks, addTask, updateTask } = useTasks();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [draggedTask, setDraggedTask] = useState(null);
+  const [notifications, setNotifications] = useState([]);
   const [newTask, setNewTask] = useState({
     title: '',
     description: '',
@@ -77,11 +78,41 @@ export const TaskManagementView = () => {
   const handleDrop = (e, employeeId) => {
     e.preventDefault();
     if (draggedTask) {
+      const previousEmployeeId = draggedTask.assignedTo;
+      const isReassignment = previousEmployeeId && previousEmployeeId !== employeeId;
+      
+      // Update task assignment
       updateTask(draggedTask.id, {
         assignedTo: employeeId,
         assignedDate: new Date().toISOString().split('T')[0],
-        lastActivityAt: new Date().toISOString()
+        lastActivityAt: new Date().toISOString(),
+        previousAssignee: isReassignment ? previousEmployeeId : draggedTask.previousAssignee,
+        reassignedAt: isReassignment ? new Date().toISOString() : draggedTask.reassignedAt
       });
+
+      // Create handover notification if reassigning
+      if (isReassignment) {
+        const previousEmployee = EMPLOYEES.find(emp => emp.id === previousEmployeeId);
+        const newEmployee = EMPLOYEES.find(emp => emp.id === employeeId);
+        
+        const notification = {
+          id: Date.now(),
+          taskId: draggedTask.id,
+          taskTitle: draggedTask.title,
+          from: previousEmployee?.name || 'Unknown',
+          to: newEmployee?.name || 'Unknown',
+          timestamp: new Date().toISOString(),
+          read: false
+        };
+        
+        setNotifications(prev => [notification, ...prev]);
+        
+        // Auto-remove notification after 10 seconds
+        setTimeout(() => {
+          setNotifications(prev => prev.filter(n => n.id !== notification.id));
+        }, 10000);
+      }
+      
       setDraggedTask(null);
     }
   };
@@ -126,6 +157,42 @@ export const TaskManagementView = () => {
 
   return (
     <div className="h-full flex flex-col">
+      {/* Handover Notifications */}
+      {notifications.length > 0 && (
+        <div className="fixed top-20 right-6 z-50 space-y-2 max-w-md">
+          {notifications.map(notif => (
+            <Card key={notif.id} className="p-4 bg-[var(--info-bg)] border-2 border-[var(--info)] shadow-lg animate-in slide-in-from-right">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-[var(--info)] rounded-lg">
+                  <ArrowRightLeft size={18} className="text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Bell size={14} className="text-[var(--info)]" />
+                    <h4 className="font-semibold text-[var(--text-primary)] text-sm">Task Handover</h4>
+                  </div>
+                  <p className="text-sm text-[var(--text-secondary)] mb-1">
+                    <span className="font-medium">{notif.taskTitle}</span>
+                  </p>
+                  <p className="text-xs text-[var(--muted-foreground)]">
+                    Reassigned from <span className="font-medium text-[var(--text-primary)]">{notif.from}</span> to <span className="font-medium text-[var(--text-primary)]">{notif.to}</span>
+                  </p>
+                  <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                    {new Date(notif.timestamp).toLocaleTimeString()}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setNotifications(prev => prev.filter(n => n.id !== notif.id))}
+                  className="text-[var(--muted-foreground)] hover:text-[var(--text-primary)]"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
@@ -237,7 +304,7 @@ export const TaskManagementView = () => {
                     ) : (
                       getEmployeeTasks(employee.id).map(task => (
                         <div key={task.id} className="relative">
-                          <TaskCard task={task} draggable={false} />
+                          <TaskCard task={task} draggable={true} />
                           <div className="absolute top-2 right-2">
                             <Badge type={
                               task.status === 'Completed' ? 'success' :

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { 
   Clock, 
   Calendar, 
@@ -5,9 +6,13 @@ import {
   TrendingUp,
   CheckCircle2,
   Clock3,
-  MoreHorizontal
+  MoreHorizontal,
+  Play,
+  Pause,
+  RotateCcw,
+  Target
 } from 'lucide-react';
-import { Card, Badge, Button, Avatar } from '../components/ui';
+import { Card, Badge, Button, Avatar, Modal } from '../components/ui';
 import { useUser } from '../context/UserContext';
 import { useTasks } from '../context/TasksContext';
 import { USER_PROFILE, STATS, ATTENDANCE_LOGS, ANNOUNCEMENTS, TEAM_MEMBERS } from '../data/mockData';
@@ -17,12 +22,49 @@ import { USER_PROFILE, STATS, ATTENDANCE_LOGS, ANNOUNCEMENTS, TEAM_MEMBERS } fro
  */
 export const DashboardView = ({ setActiveTab }) => {
   const { getUserProfile } = useUser();
-  const { getTasksForUser } = useTasks();
+  const { getTasksForUser, startTask, pauseTask, updateTask, completeTask } = useTasks();
   const userProfile = getUserProfile();
   
   // Get real tasks for current user
   const userTasks = getTasksForUser(userProfile.id);
   const pendingTasks = userTasks.filter(t => t.status !== 'Completed').length;
+
+  // Task action modal state
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [progressValue, setProgressValue] = useState(0);
+
+  // Handle task click
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setProgressValue(task.progress || 0);
+    setIsTaskModalOpen(true);
+  };
+
+  // Handle start/pause task
+  const handleToggleTask = () => {
+    if (selectedTask.isRunning) {
+      pauseTask(selectedTask.id);
+    } else {
+      startTask(selectedTask.id);
+    }
+    setIsTaskModalOpen(false);
+  };
+
+  // Handle update progress
+  const handleUpdateProgress = () => {
+    updateTask(selectedTask.id, { 
+      progress: progressValue,
+      status: progressValue === 100 ? 'Completed' : progressValue > 0 ? 'In Progress' : 'Not Started'
+    });
+    setIsTaskModalOpen(false);
+  };
+
+  // Handle complete task
+  const handleCompleteTask = () => {
+    completeTask(selectedTask.id);
+    setIsTaskModalOpen(false);
+  };
 
   return (
   <div className="space-y-6">
@@ -80,39 +122,6 @@ export const DashboardView = ({ setActiveTab }) => {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Left Column */}
       <div className="lg:col-span-2 space-y-6">
-        <Card className="p-0 overflow-hidden">
-          <div className="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center">
-            <h3 className="font-semibold text-[var(--text-primary)]">Recent Attendance</h3>
-            <button onClick={() => setActiveTab('attendance')} className="text-[var(--primary)] text-sm font-medium hover:underline">View All</button>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-[var(--muted)] text-[var(--muted-foreground)] font-medium">
-                <tr>
-                  <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3">Status</th>
-                  <th className="px-6 py-3">Check In</th>
-                  <th className="px-6 py-3">Check Out</th>
-                  <th className="px-6 py-3">Duration</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border)]">
-                {ATTENDANCE_LOGS.map((log, i) => (
-                  <tr key={i} className="hover:bg-[var(--muted)]/50 transition-colors">
-                    <td className="px-6 py-3.5 font-medium text-[var(--text-secondary)]">{log.date}</td>
-                    <td className="px-6 py-3.5">
-                      <Badge type={log.status === "Present" ? "success" : "neutral"}>{log.status}</Badge>
-                    </td>
-                    <td className="px-6 py-3.5 text-[var(--muted-foreground)]">{log.checkIn}</td>
-                    <td className="px-6 py-3.5 text-[var(--muted-foreground)]">{log.checkOut}</td>
-                    <td className="px-6 py-3.5 text-[var(--muted-foreground)]">{log.duration}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="p-5">
             <div className="flex justify-between items-center mb-4">
@@ -126,8 +135,12 @@ export const DashboardView = ({ setActiveTab }) => {
                   <p className="text-sm">No tasks assigned yet</p>
                 </li>
               ) : (
-                userTasks.slice(0, 5).map(task => (
-                  <li key={task.id} className="flex items-start justify-between p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/30 transition-all cursor-pointer group">
+                userTasks.slice().reverse().slice(0, 5).map(task => (
+                  <li 
+                    key={task.id} 
+                    onClick={() => handleTaskClick(task)}
+                    className="flex items-start justify-between p-3 rounded-lg border border-[var(--border)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/30 transition-all cursor-pointer group"
+                  >
                     <div className="flex items-start space-x-3">
                       <div className={`mt-1 w-2 h-2 rounded-full ${task.priority === 'High' ? 'bg-rose-500' : task.priority === 'Medium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
                       <div>
@@ -171,6 +184,39 @@ export const DashboardView = ({ setActiveTab }) => {
             </div>
           </Card>
         </div>
+
+        <Card className="p-0 overflow-hidden">
+          <div className="px-6 py-4 border-b border-[var(--border)] flex justify-between items-center">
+            <h3 className="font-semibold text-[var(--text-primary)]">Recent Attendance</h3>
+            <button onClick={() => setActiveTab('attendance')} className="text-[var(--primary)] text-sm font-medium hover:underline">View All</button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-[var(--muted)] text-[var(--muted-foreground)] font-medium">
+                <tr>
+                  <th className="px-6 py-3">Date</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Check In</th>
+                  <th className="px-6 py-3">Check Out</th>
+                  <th className="px-6 py-3">Duration</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {ATTENDANCE_LOGS.map((log, i) => (
+                  <tr key={i} className="hover:bg-[var(--muted)]/50 transition-colors">
+                    <td className="px-6 py-3.5 font-medium text-[var(--text-secondary)]">{log.date}</td>
+                    <td className="px-6 py-3.5">
+                      <Badge type={log.status === "Present" ? "success" : "neutral"}>{log.status}</Badge>
+                    </td>
+                    <td className="px-6 py-3.5 text-[var(--muted-foreground)]">{log.checkIn}</td>
+                    <td className="px-6 py-3.5 text-[var(--muted-foreground)]">{log.checkOut}</td>
+                    <td className="px-6 py-3.5 text-[var(--muted-foreground)]">{log.duration}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       </div>
 
       {/* Right Column */}
@@ -208,16 +254,128 @@ export const DashboardView = ({ setActiveTab }) => {
           </div>
         </Card>
 
-        <Card className="p-4 bg-linear-to-br from-slate-800 to-slate-900 text-slate-300 border-none relative overflow-hidden">
+        <Card className="p-4 bg-linear-to-r from-indigo-600 to-indigo-800 border-none relative overflow-hidden">
           <div className="relative z-10">
             <h4 className="text-white font-medium mb-1">Upcoming Holiday</h4>
             <p className="text-2xl font-bold text-white mb-1">New Year's day</p>
             <p className="text-sm opacity-80">Thursday, Jan 1</p>
           </div>
-          <Calendar className="absolute -right-4 -bottom-4 text-slate-700 opacity-20" size={100} />
+          <Calendar className="absolute -right-4 -bottom-4 text-slate-300 opacity-20" size={100} />
         </Card>
       </div>
     </div>
+
+    {/* Task Action Modal */}
+    {selectedTask && (
+      <Modal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        title="Task Actions"
+      >
+        <div className="space-y-4">
+          {/* Task Info */}
+          <div className="p-4 bg-[var(--muted)] rounded-lg">
+            <h3 className="font-semibold text-[var(--text-primary)] mb-2">
+              {selectedTask.title}
+            </h3>
+            {selectedTask.description && (
+              <p className="text-sm text-[var(--muted-foreground)] mb-3">
+                {selectedTask.description}
+              </p>
+            )}
+            <div className="flex flex-wrap gap-2">
+              <Badge type={
+                selectedTask.status === 'Completed' ? 'success' :
+                selectedTask.status === 'In Progress' ? 'indigo' :
+                selectedTask.status === 'Review' ? 'warning' :
+                'neutral'
+              }>
+                {selectedTask.status}
+              </Badge>
+              <Badge type={
+                selectedTask.priority === 'High' ? 'danger' :
+                selectedTask.priority === 'Medium' ? 'warning' :
+                'success'
+              }>
+                {selectedTask.priority} Priority
+              </Badge>
+            </div>
+          </div>
+
+          {/* Progress Update */}
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-[var(--text-secondary)]">
+              Update Progress
+            </label>
+            <div className="flex items-center gap-3">
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={progressValue}
+                onChange={(e) => setProgressValue(parseInt(e.target.value))}
+                className="flex-1 h-2 bg-[var(--secondary)] rounded-lg appearance-none cursor-pointer"
+              />
+              <span className="text-sm font-semibold text-[var(--text-primary)] min-w-[3rem]">
+                {progressValue}%
+              </span>
+            </div>
+            <div className="h-2 w-full bg-[var(--secondary)] rounded-full overflow-hidden">
+              <div 
+                className={`h-full rounded-full transition-all duration-300 ${
+                  progressValue === 100 
+                    ? 'bg-[rgb(var(--success))]' 
+                    : progressValue >= 50 
+                    ? 'bg-[rgb(var(--info))]' 
+                    : 'bg-[rgb(var(--primary))]'
+                }`}
+                style={{ width: `${progressValue}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-3 pt-4 border-t border-[var(--border)]">
+            <Button
+              onClick={handleToggleTask}
+              variant="outline"
+              className="w-full"
+              icon={selectedTask.isRunning ? Pause : Play}
+            >
+              {selectedTask.isRunning ? 'Pause Task' : 'Start Task'}
+            </Button>
+            
+            <Button
+              onClick={handleUpdateProgress}
+              variant="outline"
+              className="w-full"
+              icon={Target}
+            >
+              Update Progress to {progressValue}%
+            </Button>
+
+            {selectedTask.status !== 'Completed' && (
+              <Button
+                onClick={handleCompleteTask}
+                variant="primary"
+                className="w-full"
+                icon={CheckCircle2}
+              >
+                Mark as Complete
+              </Button>
+            )}
+
+            <Button
+              variant="ghost"
+              onClick={() => setIsTaskModalOpen(false)}
+              className="w-full"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    )}
   </div>
   );
 };

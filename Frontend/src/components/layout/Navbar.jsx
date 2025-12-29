@@ -1,4 +1,4 @@
-import { Menu, Search, Bell, Moon, Sun, RefreshCw } from 'lucide-react';
+import { Menu, Search, Bell, Moon, Sun, RefreshCw, ListTodo, Eye, LayoutDashboard } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { useUser } from '../../context/UserContext';
 
@@ -18,16 +18,44 @@ export const Navbar = ({ activeTab, setIsMobileMenuOpen, setActiveTab, notificat
 
   return (
     <header className="bg-[var(--navbar-bg)] border-b border-[var(--border)] h-16 flex items-center justify-between px-4 lg:px-8 transition-colors">
-      <div className="flex items-center">
+      <div className="flex items-center gap-6">
         <button 
           onClick={() => setIsMobileMenuOpen(true)}
           className="lg:hidden p-2 -ml-2 mr-2 text-[var(--muted-foreground)] hover:bg-[var(--muted)] rounded-md transition-colors"
         >
           <Menu size={24} />
         </button>
-        <h1 className="text-xl font-semibold text-[var(--navbar-foreground)] capitalize hidden sm:block">
-          {activeTab.replace('-', ' ')}
-        </h1>
+        
+        {/* Admin Navigation Links */}
+        {isAdmin() ? (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--text-primary)] hover:bg-[var(--muted)] rounded-lg transition-colors"
+            >
+              <LayoutDashboard size={16} />
+              <span>Dashboard</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('task-management')}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--text-primary)] hover:bg-[var(--muted)] rounded-lg transition-colors"
+            >
+              <ListTodo size={16} />
+              <span>Manage Tasks</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('tasks')}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--muted-foreground)] hover:text-[var(--text-primary)] hover:bg-[var(--muted)] rounded-lg transition-colors"
+            >
+              <Eye size={16} />
+              <span>View All Tasks</span>
+            </button>
+          </div>
+        ) : (
+          <h1 className="text-xl font-semibold text-[var(--navbar-foreground)] capitalize hidden sm:block">
+            {activeTab.replace('-', ' ')}
+          </h1>
+        )}
       </div>
 
       <div className="flex items-center space-x-4">
