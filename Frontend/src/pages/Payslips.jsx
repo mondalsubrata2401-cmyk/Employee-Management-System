@@ -11,7 +11,7 @@ export const PayslipsView = () => (
     
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Latest Payslip Summary */}
-      <Card className="p-6 md:col-span-2 bg-gradient-to-r from-slate-800 to-slate-900 text-white border-none">
+      <Card className="p-6 md:col-span-2 bg-linear-to-r from-slate-800 to-slate-900 text-white border-none">
         <div className="flex justify-between items-start mb-8">
           <div>
             <p className="text-slate-300 text-sm mb-1">Most Recent Salary</p>

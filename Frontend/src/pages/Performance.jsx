@@ -48,7 +48,7 @@ export const PerformanceView = () => {
       </div>
 
       {generatedGoals && generatedGoals.length > 0 && (
-        <Card className="p-6 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-100 animate-in slide-in-from-top-4">
+        <Card className="p-6 bg-linear-to-br from-indigo-50 to-purple-50 border-indigo-100 animate-in slide-in-from-top-4">
           <div className="flex items-center space-x-2 text-indigo-700 mb-4">
             <Sparkles size={18} />
             <h3 className="font-semibold">AI Suggested Goals for your Role</h3>

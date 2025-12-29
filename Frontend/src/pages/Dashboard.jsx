@@ -17,7 +17,7 @@ export const DashboardView = ({ setActiveTab }) => (
   <div className="space-y-6">
     {/* Welcome Section */}
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Card className="md:col-span-2 p-6 flex items-center justify-between bg-gradient-to-r from-indigo-600 to-indigo-800 text-white border-none">
+      <Card className="md:col-span-2 p-6 flex items-center justify-between bg-linear-to-r from-indigo-600 to-indigo-800 text-white border-none">
         <div>
           <h1 className="text-2xl font-bold mb-2">Good Morning, {USER_PROFILE.name.split(' ')[0]}!</h1>
           <p className="text-indigo-100">You have {STATS.pendingTasks} tasks pending for today. Make it a productive one.</p>
@@ -190,7 +190,7 @@ export const DashboardView = ({ setActiveTab }) => (
           </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-slate-800 to-slate-900 text-slate-300 border-none relative overflow-hidden">
+        <Card className="p-4 bg-linear-to-br from-slate-800 to-slate-900 text-slate-300 border-none relative overflow-hidden">
           <div className="relative z-10">
             <h4 className="text-white font-medium mb-1">Upcoming Holiday</h4>
             <p className="text-2xl font-bold text-white mb-1">Thanksgiving</p>

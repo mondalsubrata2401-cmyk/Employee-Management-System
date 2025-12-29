@@ -8,7 +8,7 @@ import { USER_PROFILE } from '../data/mockData';
 export const ProfileView = () => (
   <div className="max-w-4xl mx-auto space-y-6">
     <div className="relative mb-12">
-      <div className="h-32 bg-gradient-to-r from-slate-200 to-slate-300 rounded-xl"></div>
+      <div className="h-32 bg-linear-to-r from-slate-200 to-slate-300 rounded-xl"></div>
       <div className="absolute -bottom-10 left-6 flex items-end space-x-4">
         <div className="w-24 h-24 rounded-full bg-white p-1 shadow-md">
           <Avatar name={USER_PROFILE.name} size="xl" />

@@ -53,7 +53,7 @@ export const AttendanceView = () => (
                 {status === 'absent' && <span className="text-[10px] font-bold">Absent</span>}
                 {status === 'today' && <span className="text-[10px] font-bold">Active</span>}
               </div>
-            );
+            )
           })}
         </div>
       </Card>
